@@ -294,9 +294,9 @@
           return [];
         }
 
-        // Ajustar o filtro para ser mais tolerante
+        // Relaxar o filtro para aceitar vídeos com no_watermark
         const videos = data.resultado.filter(v => {
-          const hasNoWatermark = v && typeof v.no_watermark === 'string' && v.no_watermark.trim() !== '';
+          const hasNoWatermark = v && v.no_watermark;
           if (!hasNoWatermark) {
             console.log('Vídeo rejeitado por falta de no_watermark:', v);
           }
@@ -358,7 +358,7 @@
       if (event.key === 'Enter') {
         const query = document.getElementById('searchInput').value.trim();
         if (query) {
-          window.location.href = `src?query=${encodeURIComponent(query)}`;
+          window.location.href = `search.html?query=${encodeURIComponent(query)}`;
         }
       }
     }
