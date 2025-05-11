@@ -7,7 +7,7 @@ const fetch = require('node-fetch');
 const fs = require('fs');
 const path = require('path');
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000; // Ajustado para Render
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -272,7 +272,7 @@ app.post('/api/videos', async (req, res) => {
   if (!query) return res.status(400).json({ erro: 'Query não fornecida' });
   try {
     console.log(`Buscando vídeos com query: ${query}`);
-    const response = await fetch(`https://kamuiapi.shop/api/ferramenta/tiktok-search?query=${encodeURIComponent(query)}&apikey=dantes15s`);
+    const response = await fetch(`https://kamuiapi.shop/api/ferramenta/tiktok-search?query=${encodeURIComponent(query)}&apikey=`);
     console.log('Status da resposta da API Kamui:', response.status);
     if (!response.ok) {
       throw new Error(`Erro HTTP: ${response.status} - ${await response.text()}`);
@@ -314,13 +314,13 @@ app.post('/api/search/users', (req, res) => {
   res.json({ users: filteredUsers });
 });
 
-// Nova rota para pesquisa de vídeos
-app.get('/search', async (req, res) => {
+// Nova rota para pesquisa de vídeos (substitui /src)
+app.get('/src', async (req, res) => {
   const { query } = req.query;
   if (!query) return res.status(400).json({ erro: 'Query não fornecida' });
   try {
     console.log(`Buscando vídeos com query: ${query}`);
-    const response = await fetch(`https://kamuiapi.shop/api/ferramenta/tiktok-search?query=${encodeURIComponent(query)}&apikey=dantes15s`);
+    const response = await fetch(`https://kamuiapi.shop/api/ferramenta/tiktok-search?query=${encodeURIComponent(query)}&apikey=`);
     console.log('Status da resposta da API Kamui:', response.status);
     if (!response.ok) {
       throw new Error(`Erro HTTP: ${response.status} - ${await response.text()}`);
@@ -351,29 +351,30 @@ app.get('/search', async (req, res) => {
   }
 });
 
+// Rota para servir o search.html
+app.get('/search', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'search.html'));
+});
+
 // Rota para servir o index.html na raiz
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
-// Rota para servir o index.html na raiz
+
+// Rota para servir o login.html
 app.get('/login', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'login.html'));
 });
-// Rota para servir o index.html na raiz
+
+// Rota para servir o register.html
 app.get('/registro', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'register.html'));
 });
-// Rota para servir o index.html na raiz
-app.get('/src', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'search.html'));
-});
-// Rota para servir o index.html na raiz
+
+// Rota para servir o profile.html
 app.get('/perfil', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'profile.html'));
 });
-
-
-
 
 app.listen(PORT, () => {
   console.log(`Servidor rodando em http://localhost:${PORT}`);
