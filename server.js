@@ -272,7 +272,7 @@ app.post('/api/videos', async (req, res) => {
   if (!query) return res.status(400).json({ erro: 'Query não fornecida' });
   try {
     console.log(`Buscando vídeos com query: ${query}`);
-    const response = await fetch(`https://kamuiapi.shop/api/ferramenta/tiktok-search?query=${encodeURIComponent(query)}&apikey=dantes15s`);
+    const response = await fetch(`https://kamuiapi.shop/api/ferramenta/tiktok-search?query=${encodeURIComponent(query)}&apikey=`);
     console.log('Status da resposta da API Kamui:', response.status);
     if (!response.ok) {
       throw new Error(`Erro HTTP: ${response.status} - ${await response.text()}`);
@@ -320,7 +320,7 @@ app.get('/search', async (req, res) => {
   if (!query) return res.status(400).json({ erro: 'Query não fornecida' });
   try {
     console.log(`Buscando vídeos com query: ${query}`);
-    const response = await fetch(`https://kamuiapi.shop/api/ferramenta/tiktok-search?query=${encodeURIComponent(query)}&apikey=dantes15s`);
+    const response = await fetch(`https://kamuiapi.shop/api/ferramenta/tiktok-search?query=${encodeURIComponent(query)}&apikey=`);
     console.log('Status da resposta da API Kamui:', response.status);
     if (!response.ok) {
       throw new Error(`Erro HTTP: ${response.status} - ${await response.text()}`);
