@@ -890,8 +890,10 @@
     });
 
     let startY = null;
+    let touchTimeout = null;
     document.addEventListener('touchstart', e => {
       startY = e.touches[0].clientY;
+      if (touchTimeout) clearTimeout(touchTimeout); // Evitar múltiplos toques rápidos
     });
     document.addEventListener('touchend', e => {
       if (startY === null) return;
@@ -902,7 +904,7 @@
         if (diff > 0) nextVideo();
         else prevVideo();
       }
-      startY = null;
+      touchTimeout = setTimeout(() => { startY = null; }, 200); // Reset após 200ms
     });
 
     document.addEventListener('wheel', e => {
@@ -911,7 +913,25 @@
       else prevVideo();
     });
 
-    loadInitialVideos();
+    // Adicionar verificação para evitar loop de redirecionamento
+    if (window.location.pathname === '/login' && !currentUser) {
+      loadInitialVideos();
+    } else if (!currentUser) {
+      let redirectCount = 0;
+      const maxRedirects = 3;
+      const redirectToLogin = () => {
+        if (redirectCount < maxRedirects) {
+          redirectCount++;
+          window.location.href = '/login';
+        } else {
+          console.error('Limite de redirecionamentos atingido. Verifique o localStorage ou o servidor.');
+        }
+      };
+      redirectToLogin();
+    } else {
+      loadInitialVideos();
+    }
   </script>
+
 </body>
 </html>
