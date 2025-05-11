@@ -271,7 +271,7 @@
 
   <script>
     const currentUser = localStorage.getItem('currentUser');
-    const baseUrl = window.location.origin;
+    const baseUrl = 'https://vibeflow-6xk2.onrender.com';
 
     if (!currentUser) {
       window.location.href = 'login.html';
@@ -279,22 +279,24 @@
 
     async function fetchVideos(query) {
       try {
-        console.log(`Tentando buscar vídeos com query: ${query}`);
-        const res = await fetch(`${baseUrl}/src?query=${encodeURIComponent(query)}`);
+        console.log(`Tentando buscar vídeos com query: ${query} em ${baseUrl}/src?query=${encodeURIComponent(query)}`);
+        const res = await fetch(`${baseUrl}/src?query=${encodeURIComponent(query)}`, {
+          method: 'GET',
+          headers: { 'Content-Type': 'application/json' }
+        });
         if (!res.ok) {
           const errorText = await res.text();
           console.error(`Erro HTTP: ${res.status} - ${errorText}`);
           throw new Error(`Erro HTTP: ${res.status}`);
         }
         const data = await res.json();
-        console.log('Dados recebidos:', data);
+        console.log('Dados recebidos:', JSON.stringify(data, null, 2));
 
         if (!data.resultado || !Array.isArray(data.resultado)) {
-          console.error('Formato de dados inválido:', data);
+          console.error('Formato de dados inválido ou resultado ausente:', data);
           return [];
         }
 
-        // Relaxar o filtro para aceitar vídeos com no_watermark
         const videos = data.resultado.filter(v => {
           const hasNoWatermark = v && v.no_watermark;
           if (!hasNoWatermark) {
@@ -303,10 +305,12 @@
           return hasNoWatermark;
         });
         console.log('Vídeos filtrados:', videos);
-        return videos;
+        return videos.length > 0 ? videos : [
+          { no_watermark: 'https://www.w3schools.com/html/mov_bbb.mp4', title: 'Vídeo de Fallback', music: { title: 'Música de Fallback' } }
+        ];
       } catch (err) {
         console.error('Erro ao carregar vídeos:', err.message);
-        return [];
+        return [{ no_watermark: 'https://www.w3schools.com/html/mov_bbb.mp4', title: 'Vídeo de Fallback (Erro)', music: { title: 'Música de Fallback' } }];
       }
     }
 
@@ -330,11 +334,10 @@
       const videoWrapper = document.getElementById('videoWrapper');
 
       if (videos.length === 0) {
-        document.getElementById('videoWrapper').innerHTML = '<div class="no-results">Nenhum resultado encontrado para "' + query + '". Verifique a conexão com o servidor ou tente outro termo de busca.</div>';
+        document.getElementById('videoWrapper').innerHTML = '<div class="no-results">Nenhum resultado encontrado para "' + query + '". A API pode estar indisponível ou a query não retornou resultados válidos.</div>';
         return;
       }
 
-      // Exibir até 8 vídeos em uma linha horizontal
       videoWrapper.innerHTML = '';
       for (let i = 0; i < Math.min(8, videos.length); i++) {
         const video = videos[i];
